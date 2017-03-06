@@ -9,9 +9,10 @@ import java.util.stream.Collectors;
 class Alphabet {
 	private static final String ORIGINAL = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-";
 
-	static String alphabet;
-	static int previousSeed;
+	static long seed = 1;
+	private static final Random random = new Random(seed);
 
+	static String alphabet;
 	static String shuffled;
 
 	private static void reset() {
@@ -52,11 +53,11 @@ class Alphabet {
 		return alphabet;
 	}
 
-	void setSeed(int seed) {
-		RandomFromSeed.setSeed(seed);
-		if (previousSeed != seed) {
+	static void setSeed(Long _seed_) {
+		random.setSeed(_seed_);
+		if (seed != _seed_) {
 			reset();
-			previousSeed = seed;
+			seed = _seed_;
 		}
 	}
 
@@ -66,12 +67,11 @@ class Alphabet {
 		}
 
 		List<String> sourceArray = Arrays.asList(alphabet.split(""));
-		Long r = Math.round(Math.floor(RandomFromSeed.nextValue()));
-		Collections.shuffle(sourceArray, new Random(r));
+		Collections.shuffle(sourceArray, random);
 		return sourceArray.stream().collect(Collectors.joining(""));
 	}
 
-	private static String getShuffled() {
+	static String getShuffled() {
 		if (shuffled != null) {
 			return shuffled;
 		}
