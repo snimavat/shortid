@@ -1,13 +1,10 @@
-plugins {
-    id "com.jfrog.bintray" version "1.7.3"
-}
 
 apply plugin: 'java'
 apply plugin: "maven-publish"
 
 sourceCompatibility = 1.8
 group 'me.nimavat'
-version '1.0.1.RC1'
+version '1.0.1'
 
 repositories {
     mavenLocal()
@@ -20,42 +17,29 @@ task sourceJar(type: Jar) {
 }
 
 publishing {
+  repositories {
+         maven {
+             name = "GitHubPackages"
+             url = uri("https://maven.pkg.github.com/snimavat/shortid")
+             credentials {
+                 username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+                 password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+             }
+         }
+     }
+
     publications {
-        mavenJava(MavenPublication) {  // Artifacts to publish
+        gpr(MavenPublication) {
+            // Artifacts to publish
             from components.java
             artifact sourceJar
-
             groupId 'me.nimavat'
             artifactId 'shortid'
-            version '1.0.1.RC1'
+            version '1.0.1'
         }
     }
-}
-
-bintray {
-    user = System.getenv("BINTRAY_USER") ?: project.bintrayUser
-    key = System.getenv("BINTRAY_KEY") ?: project.bintrayKey
-
-    publications = ['mavenJava']
-
-    pkg {
-        repo = 'maven'
-        name = 'shortid'
-        desc = 'Short id generator. Url-friendly. Non-predictable. Cluster-compatible.'
-        licenses = ['Apache-2.0']
-        publicDownloadNumbers = true
-
-        githubRepo = "snimavat/shortid"
-        githubReleaseNotesFile = 'README.md'
-        vcsUrl = 'https://github.com/snimavat/shortid'
-        issueTrackerUrl = 'https://github.com/snimavat/shortid/issues'
-
-    }
-
-    override = rootProject.version.endsWith("SNAPSHOT")
 }
 
 dependencies {
     //testCompile group: 'junit', name: 'junit', version: '4.11'
 }
-
